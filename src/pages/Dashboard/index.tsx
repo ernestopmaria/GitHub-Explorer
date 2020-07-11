@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import api from '../../services/api';
 import { Title, Form, Repositories } from './styles';
@@ -8,7 +8,8 @@ const Dashboard: React.FC = () => {
     const [newRepo, setNewRepo] = useState('');
     const [repositories, setRepositories] = useState([]);
 
-    function handleAddRepository(): void{
+    function handleAddRepository(event: FormEvent<HTMLFormElement>): void{
+        event.preventDefault();
         console.log(newRepo);
     }
 
