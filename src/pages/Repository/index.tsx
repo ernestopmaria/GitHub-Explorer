@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import { useRouteMatch, Link} from 'react-router-dom';
 import {FiChevronsLeft, FiChevronRight} from 'react-icons/fi';
 import {Header,RepositoryInfo, Issues} from './styles';
 import logoImg from '../../assets/logo.svg';
+import api from '../../services/api';
 
 interface RepositoryParams{
     repository:string;
