@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import { useRouteMatch, Link} from 'react-router-dom';
 import {FiChevronsLeft, FiChevronRight} from 'react-icons/fi';
@@ -10,9 +10,43 @@ interface RepositoryParams{
     repository:string;
 }
 
+interface Repository{
+    full_name: string;
+    description: string;
+    stargazers_count: number;
+    forks_count:number;
+    open_issues_count: number;
+    owner:{
+        login: string;
+        avatar_url:string;
+    };
+}
+
+interface Issue{
+    id: number;
+    title:string;
+    html_url:string;
+    user:{
+        login: string;
+    }
+}
+
 const Repository: React.FC = () => {
 
     const {params} = useRouteMatch<RepositoryParams>();
+
+    const[repository, setRepository] = useState<Repository | null>(null);
+    const [issues, setIssues] = useState<Issue[]>([]);
+
+    useEffect(()=>{
+        api.get(`repos/${params.repository}`).then(response =>{
+           setRepository(response.data);
+        });
+        api.get(`repos/${params.repository}/issues`).then(response =>{
+            setIssues(response.data)
+        });
+
+    },[params.repository]);
 
     return (
         <>
@@ -24,38 +58,38 @@ const Repository: React.FC = () => {
             </Link>
         </Header>
 
-        <RepositoryInfo>
+           { repository &&  (  <RepositoryInfo>
             <header>
-                <img src="https://avatars3.githubusercontent.com/u/58423237?s=460&u=f39d1d5e73424473bc991b93bb36566ecb015b76&v=4" alt="Ernesto Maria"/>
+                <img src={repository.owner.avatar_url} alt={repository.owner.login}/>
                 <div>
-                    <strong>rocketseat/unform</strong>
-                    <p> descrição do repositorio</p>
+                    <strong>{repository.full_name}</strong>
+                    <p> {repository.description}</p>
                 </div>
             </header>
             <ul>
                 <li>
-                    <strong>1080</strong>
+                    <strong>{repository.stargazers_count}</strong>
                     <span>Stars</span>
                 </li>
                 <li>
-                    <strong>48</strong>
+                    <strong>{repository.forks_count}</strong>
                     <span>Forks</span>
                 </li>
                 <li>
-                    <strong>67</strong>
+           <strong>{repository.open_issues_count}</strong>
                     <span>Issues abertas</span>
                 </li>
             </ul>
-        </RepositoryInfo>
+        </RepositoryInfo>)}
         <Issues>
-        <Link   to ="teste">
+      {issues.map (issue=>( <a key ={issue.id}   href ={issue.html_url}>
 
                     <div>
-                        <strong>Gostack</strong>
-                        <p>Curso Bootcamp</p>
+                        <strong>{issue.title}</strong>
+                        <p>{issue.user.login}</p>
                     </div>
                     <FiChevronRight size={20} />
-                </Link>
+                </a>))}
         </Issues>
         </>
     );
